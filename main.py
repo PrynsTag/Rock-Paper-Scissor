@@ -14,25 +14,28 @@ class Game:
         return self.result(choice(self.choice))
 
     def result(self, comp_choice):
-        LOSE = "Sorry, but the computer chose {}"
-        DRAW = "There is a draw ({})"
-        WIN = "Well done. The computer chose {} and failed"
+        LOSE = "Sorry, but the computer chose {}".format(comp_choice)
+        DRAW = "There is a draw ({})".format(comp_choice)
+        WIN = "Well done. The computer chose {} and failed".format(comp_choice)
 
         while True:
             user_choice = input().lower()
             if comp_choice == user_choice:
-                result = DRAW.format(comp_choice)
+                result = DRAW
             elif self.user_win[comp_choice] == user_choice:
-                result = WIN.format(comp_choice)
-                break
+                result = WIN
             else:
                 if user_choice in self.user_win:
-                    result = LOSE.format(comp_choice)
+                    result = LOSE
                 else:
-                    result = f"Wrong Input. Chose from: {', '.join(self.choice)}"
-            print(result)
+                    result = "Invalid Input"
 
-        print(result)
+            # Exit Condition
+            if user_choice == "!exit":
+                print("Bye!")
+                break
+
+            print(result)
 
 
 if __name__ == '__main__':
