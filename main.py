@@ -3,12 +3,6 @@ from random import choice
 
 class Game:
     def __init__(self):
-        self.choice = ["rock", "paper", "scissors"]
-        self.user_win = {
-            "rock": "paper",
-            "paper": "scissors",
-            "scissors": "rock"
-        }
         self.player_name = None
         self.leaderBoard = {}
 
@@ -25,42 +19,55 @@ class Game:
     def play(self):
         self.greet_player()
         self.read_file()
-        # Check if player has existing score, 0 if not
-        SCORE = self.leaderBoard[self.player_name] if self.player_name in self.leaderBoard.keys() else 0
-        LOSE = "Sorry, but the computer chose {}"
-        DRAW = "There is a draw ({})"
-        WIN = "Well done. The computer chose {} and failed"
+        option = ["rock", "paper", "scissors"]
 
         while True:
             user_choice = input().lower()
-            comp_choice = choice(self.choice)
-
-            if comp_choice == user_choice:
-                result = DRAW.format(comp_choice)
-                SCORE += 50
-            elif self.user_win[comp_choice] == user_choice:
-                result = WIN.format(comp_choice)
-                SCORE += 100
-            elif user_choice == "!rating":
-                result = self.rating()
-            elif user_choice == "!leaderboard":
-                result = self.score_board()
-            else:
-                if user_choice in self.user_win:
-                    result = LOSE.format(comp_choice)
-                else:
-                    result = "Invalid Input"
+            comp_choice = choice(option)
 
             # Exit Condition
             if user_choice == "!exit":
                 print("Bye!")
                 break
+            elif user_choice in option:
+                self.rock_paper_scissor(user_choice, comp_choice)
+            else:
+                self.command(user_choice)
 
-            self.leaderBoard[self.player_name] = SCORE
-            print(result)
+    def command(self, user):
+        if user == "!rating":
+            result = self.rating()
+        elif user == "!leaderboard":
+            result = self.score_board()
+        else:
+            result = "Invalid Input"
 
-    def rock_paper_scissor(self):
-        
+        print(result)
+
+    def rock_paper_scissor(self, user, computer):
+        user_win = {
+            "rock": "paper",
+            "paper": "scissors",
+            "scissors": "rock"
+        }
+        LOSE = "Sorry, but the computer chose {}".format(computer)
+        DRAW = "There is a draw ({})".format(computer)
+        WIN = "Well done. The computer chose {} and failed".format(computer)
+
+        # Check if player has existing score, 0 if not
+        SCORE = self.leaderBoard[self.player_name] if self.player_name in self.leaderBoard.keys() else 0
+
+        if computer == user:
+            result = DRAW
+            SCORE += 50
+        elif user_win[computer] == user:
+            result = WIN
+            SCORE += 100
+        else:
+            result = LOSE
+
+        self.leaderBoard[self.player_name] = SCORE
+        print(result)
 
     def score_board(self):
         sorted_dict = dict(sorted(self.leaderBoard.items(),
