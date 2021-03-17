@@ -16,6 +16,26 @@ class Game:
                 key, value = line.strip().split(" ")
                 self.leaderBoard[key] = int(value)
 
+    def command(self, user):
+        if user == "!rating":
+            result = self.rating()
+        elif user == "!leaderboard":
+            result = self.score_board()
+        elif user == "!export":
+            result = self.export_score()
+        else:
+            result = "Invalid Input"
+
+        print(result)
+
+    def export_score(self):
+        file_name = input("Specify the name of file (name.txt): ")
+        with open(file_name, "w") as file:
+            for key, value in self.leaderBoard.items():
+                file.write(f"{key} {value}\n")
+
+        return "Score saved!"
+
     def play(self):
         self.greet_player()
         self.read_file()
@@ -33,16 +53,6 @@ class Game:
                 self.rock_paper_scissor(user_choice, comp_choice)
             else:
                 self.command(user_choice)
-
-    def command(self, user):
-        if user == "!rating":
-            result = self.rating()
-        elif user == "!leaderboard":
-            result = self.score_board()
-        else:
-            result = "Invalid Input"
-
-        print(result)
 
     def rock_paper_scissor(self, user, computer):
         user_win = {
@@ -73,6 +83,7 @@ class Game:
         sorted_dict = dict(sorted(self.leaderBoard.items(),
                                   key=lambda item: item[1],
                                   reverse=True))
+        self.leaderBoard = sorted_dict
         scores, counter = [], 0
 
         for key, value in sorted_dict.items():
