@@ -1,24 +1,38 @@
+from dataclasses import dataclass
 from random import choice
+
+
+@dataclass
+class Player:
+    username: str
+    score: int = 0
+
+    def __repr__(self):
+        return f"'{self.username}': {self.score}"
 
 
 class Game:
     def __init__(self):
-        self.player_name = None
+        self.player = Player("")
         self.leaderBoard = {}
 
     def greet_player(self):
-        self.player_name = input("Enter your name: ")
-        print(f"Hello, {self.player_name}")
+        self.player.username = input("Enter your name: ")
+        self.leaderBoard[self.player.username] = self.player.score
+        print(f"Hello, {self.player.username}")
 
     def read_file(self):
         with open("rating.txt", "r") as file:
             for line in file:
-                key, value = line.strip().split(" ")
-                self.leaderBoard[key] = int(value)
+                player = Player(*line.strip().split(" "))
+                self.leaderBoard[player.username] = int(player.score)
+
+                if self.player.username == player.username:
+                    self.player.score = int(player.score)
 
     def command(self, user):
         if user == "!rating":
-            result = self.rating()
+            result = f"your rating: {self.player}"
         elif user == "!leaderboard":
             result = self.score_board()
         elif user == "!export":
@@ -64,19 +78,16 @@ class Game:
         DRAW = "There is a draw ({})".format(computer)
         WIN = "Well done. The computer chose {} and failed".format(computer)
 
-        # Check if player has existing score, 0 if not
-        SCORE = self.leaderBoard[self.player_name] if self.player_name in self.leaderBoard.keys() else 0
-
         if computer == user:
             result = DRAW
-            SCORE += 50
+            self.player.score += 50
         elif user_win[computer] == user:
             result = WIN
-            SCORE += 100
+            self.player.score += 100
         else:
             result = LOSE
 
-        self.leaderBoard[self.player_name] = SCORE
+        self.leaderBoard[self.player.username] = self.player.score
         print(result)
 
     def score_board(self):
@@ -91,12 +102,6 @@ class Game:
             scores.append(f"{counter}. {key}: {value}")
 
         return '\n'.join(scores)
-
-    def rating(self):
-        if self.player_name in self.leaderBoard.keys():
-            return f"your rating: {self.leaderBoard[self.player_name]}"
-        else:
-            return f"your rating: 0"
 
 
 if __name__ == '__main__':
