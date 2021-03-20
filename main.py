@@ -15,6 +15,7 @@ class Game:
     def __init__(self):
         self.player = Player("")
         self.leaderBoard = {}
+        self.options = {}
 
     def greet_player(self):
         self.player.username = input("Enter your name: ")
@@ -53,27 +54,29 @@ class Game:
     def play(self):
         self.greet_player()
         self.read_file()
-        option = ["rock", "paper", "scissors"]
+        input_choices = input()
+        options = input_choices.split(',') if input_choices != '' else ["rock", "paper", "scissors"]
+        print("Okay, let's start")
 
         while True:
             user_choice = input().lower()
-            comp_choice = choice(option)
+            comp_choice = choice(options)
 
             # Exit Condition
             if user_choice == "!exit":
                 print("Bye!")
                 break
-            elif user_choice in option:
-                self.rock_paper_scissor(user_choice, comp_choice)
+            elif user_choice in options:
+                self.rock_paper_scissor(user_choice, comp_choice, options)
             else:
                 self.command(user_choice)
 
-    def rock_paper_scissor(self, user, computer):
-        user_win = {
-            "rock": "paper",
-            "paper": "scissors",
-            "scissors": "rock"
-        }
+    def rock_paper_scissor(self, user, computer, option):
+        left, right = option[:option.index(user)], option[option.index(user) + 1:]
+        not_user_choice = [*right, *left]
+        half = len(not_user_choice) // 2
+        win, lose = not_user_choice[half:], not_user_choice[:half]
+
         LOSE = "Sorry, but the computer chose {}".format(computer)
         DRAW = "There is a draw ({})".format(computer)
         WIN = "Well done. The computer chose {} and failed".format(computer)
@@ -81,7 +84,7 @@ class Game:
         if computer == user:
             result = DRAW
             self.player.score += 50
-        elif user_win[computer] == user:
+        elif computer in win:
             result = WIN
             self.player.score += 100
         else:
